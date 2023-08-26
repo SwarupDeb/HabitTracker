@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Habit Tracker</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    /* Your existing CSS styles ... */
+
+    /* New animation styles */
+    .animate-fade {
+      opacity: 0;
+      animation: fade-in 2s ease-in-out forwards;
+    }
+    @keyframes fade-in {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide {
+      transform: translateY(20px);
+      animation: slide-in 2s ease-in-out forwards;
+    }
+    @keyframes slide-in {
+      0% { transform: translateY(20px); }
+      100% { transform: translateY(0); }
+    }
+    .animate-bounce {
+      animation: bounce 2s infinite;
+      display: inline-block;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-15px);
+      }
+      60% {
+        transform: translateY(-7px);
+      }
+    }
+    @keyframes colorChange {
+      0% { color: #00ffcc; }
+      25% { color: #ffa500; }
+      50% { color: #ff00ff; }
+      75% { color: #00ff00; }
+      100% { color: #ffa500; }
+    }
+    .animate-color-change {
+      font-family: 'FuturisticFont', sans-serif;
+      animation: colorChange 5s infinite;
+    }
+    .animate-fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fade-up 2s ease-in-out forwards;
+    }
+    @keyframes fade-up {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-scale-up {
+      transform: scale(0);
+      animation: scale-up 2s ease-in-out forwards;
+    }
+    @keyframes scale-up {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+    .animate-slide-right {
+      transform: translateX(-20px);
+      animation: slide-right 2s ease-in-out forwards;
+    }
+    @keyframes slide-right {
+      0% { transform: translateX(-20px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body style="background-color: #08012e; color: #f6ff77;">
+
+  <div class="container animate-fade">
+    <div class="row mt-4 animate-slide">
+      <div class="col-md-12 text-center">
+        <h1 class="display-4 animate-bounce"><span class="emoji">🚀</span> Habit Tracker <span class="emoji">📊</span></h1>
+      </div>
+    </div>
+
+    <div class="row mt-4 animate-slide">
+      <div class="col-md-12 text-center">
+        <h2 class="lead animate-color-change">Hey <span class="emoji animate-bounce">👋</span> Swarup! Ready to <span class="animate-color-change">level up </span> your habits with our awesome tracking app <span class="animate-color-change">Daily</span> and <span class="animate-color-change">Weekly Habits</span>! <span class="emoji animate-bounce">📅</span></h2>
+      </div>
+    </div>
+
+    <div class="row mt-4 animate-slide">
+      <div class="col-md-12">
+        <ul class="list-group habit-list">
+          <% habits.forEach(habit => { %>
+            <li class="list-group-item d-flex justify-content-between align-items-center animate-fade-up" style="background-color: #3f56864d; color: #d61414; margin-bottom: 10px;">
+              <div class="d-flex align-items-center">
+                <span class="mr-3"><i class="fas fa-tasks"></i></span>
+                <a href="/habits/<%= habit._id %>" style="text-decoration: none; color: #9de6c5;"><%= habit.name %></a>
+              </div>
+              <div>
+                <form action="/habits/<%= habit._id %>/update-name" method="post">
+                  <input type="text" name="name" placeholder="Edit habit name" required class="form-control">
+                  <button type="submit" class="btn btn-warning btn-sm ml-2"><i class="fas fa-edit"></i> Edit</button>
+                </form>
+                <form action="/habits/<%= habit._id %>/delete" method="post">
+                  <button type="submit" class="btn btn-danger btn-sm ml-2"><i class="fas fa-trash-alt"></i> Delete</button>
+                </form>
+                <a href="/habits/<%= habit._id %>" class="btn btn-primary btn-sm ml-2 animate-slide-right"><i class="fas fa-chevron-right"></i> Open</a>
+              </div>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row mt-4 animate-slide">
+      <div class="col-md-12 text-center">
+        <form action="/habits" method="post" class="form-inline">
+          <input type="text" name="name" placeholder="Enter habit name" required class="form-control mr-2 animate-scale-up">
+          <button type="submit" class="btn btn-success animate-scale-up"><i class="fas fa-plus"></i> Add Habit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

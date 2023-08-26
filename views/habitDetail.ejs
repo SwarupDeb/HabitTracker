@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Habit Detail</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    /* Your existing CSS styles ... */
+
+    /* New animation styles ... */
+
+    /* New animation styles */
+    .animate-fade {
+      opacity: 0;
+      animation: fade-in 2s ease-in-out forwards;
+    }
+    @keyframes fade-in {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide {
+      transform: translateY(20px);
+      animation: slide-in 2s ease-in-out forwards;
+    }
+    @keyframes slide-in {
+      0% { transform: translateY(20px); }
+      100% { transform: translateY(0); }
+    }
+    .animate-bounce {
+      animation: bounce 2s infinite;
+      display: inline-block;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-15px);
+      }
+      60% {
+        transform: translateY(-7px);
+      }
+    }
+    .animate-color-change {
+      color: #00ffcc;
+      animation: colorChange 5s infinite;
+    }
+
+    /* New styles */
+    .habit-heading {
+      margin-bottom: 20px;
+    }
+    .habit-details {
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body style="background-color: #0d022f; color: #ffffff;">
+
+  <div class="container animate-fade">
+    <div class="row mt-4 animate-slide">
+      <div class="col-md-12 text-center">
+        <a href="/" class="btn btn-secondary btn-sm animate-slide-up"><i class="fas fa-arrow-left animate-bounce"></i> Go Back</a>
+        <h1 class="display-4 animate-color-change animate-slide habit-heading"><span class="emoji">📝</span> <%= habit.name %> <span class="emoji">📝</span></h1>
+        <h2 class="lead futuristic-text animate-slide habit-heading"><i class="far fa-clock"></i> Longest Streak: <%= habit.longestStreak %></h2>
+        <h2 class="lead futuristic-text animate-slide habit-heading"><i class="far fa-calendar"></i> Total Days: <%= habit.totalDays %></h2>
+        <h2 class="lead futuristic-text animate-slide habit-heading"><i class="fas fa-check-circle"></i> Total Done Days: <%= habit.totalDoneDays %></h2>
+      </div>
+    </div>
+
+    <div class="row mt-4 animate-slide">
+      <div class="col-md-12">
+        <form action="/habits/<%= habit._id %>/update-status" method="post">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr class="habit-heading">
+                <th>Date</th>
+                <th>Status</th>
+                <th>Timing</th>
+              </tr>
+            </thead>
+            <tbody class="habit-details">
+              <% const today = new Date(); %>
+              <% for (let i = 0; i < 7; i++) { %>
+                <% const day = new Date(today.getTime() - i * 24 * 60 * 60 * 1000); %>
+                <% const habitDay = habit.history.find(entry => entry.date.toDateString() === day.toDateString()); %>
+                <% const defaultStatus = habitDay ? habitDay.status : 'None'; %>
+                <% const defaultTiming = habitDay ? habitDay.timing : ''; %>
+                <tr>
+                  <td><%= day.toDateString() %></td>
+                  <td>
+                    <select name="statuses[]" class="form-control">
+                      <option value="Done" <% if (defaultStatus === 'Done') { %>selected<% } %>>Done</option>
+                      <option value="Not Done" <% if (defaultStatus === 'Not Done') { %>selected<% } %>>Not Done</option>
+                      <option value="None" <% if (defaultStatus === 'None') { %>selected<% } %>>None</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" name="timings[]" value="<%= defaultTiming %>" class="form-control">
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+          <button type="submit" class="btn btn-primary animate-slide-up"><i class="fas fa-sync animate-bounce"></i> Update Status</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="row mt-4 animate-slide">
+      <div class="col-md-12 text-center">
+        <div id="chart" style="width: 100%; height: 400px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    google.charts.load('current', { packages: ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      const dataArray = [
+        ['Date', 'Streak'],
+        <% habit.history.forEach(entry => { %>
+          [new Date('<%= entry.date %>'), <%= entry.streak %>],
+        <% }); %>
+      ];
+
+      const data = google.visualization.arrayToDataTable(dataArray);
+
+      const options = {
+        title: 'Streak Progress',
+        curveType: 'function',
+        legend: { position: 'bottom' },
+        hAxis: { format: 'MMM d' },
+        chartArea: { width: '80%', height: '70%' },
+      };
+
+      const chart = new google.visualization.LineChart(document.getElementById('chart'));
+
+      chart.draw(data, options);
+    }
+  </script>
+
+</body>
+</html>
